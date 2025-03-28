@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Từ điển Nga - Việt</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #editor { 
+            border: 1px solid #ccc; padding: 10px; min-height: 100px; 
+            cursor: text; white-space: pre-wrap;
+        }
+        .tooltip {
+            display: inline-block;
+            background: yellow;
+            padding: 2px 5px;
+            margin-left: 5px;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        input, button { margin-top: 10px; padding: 5px; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+    <h2>Nhập văn bản tiếng Nga:</h2>
+    <div id="editor" contenteditable="true" onclick="handleTextClick(event)">
+        Введите текст здесь...
+    </div>
+
+    <h2>Thêm từ vào từ điển:</h2>
+    <input type="text" id="newWord" placeholder="Nhập từ tiếng Nga">
+    <input type="text" id="newMeaning" placeholder="Nhập nghĩa tiếng Việt">
+    <button onclick="addWord()">Thêm từ</button>
+
+    <script>
+        // Lấy từ điển từ localStorage hoặc khởi tạo
+        let dictionary = JSON.parse(localStorage.getItem("russianVietnameseDict")) || {
+            "Путь": "Con đường",
+            "время": "Thời gian",
+            "скорость": "Tốc độ",
+            "Температура": "Nhiệt độ",
+            "масса": "Khối lượng",
+            "давление": "Áp suất",
+            "Физическая": "Vật lý",
+            "величина": "Đại lượng"
+        };
+
+        // Xử lý sự kiện khi nhấn vào từ trong văn bản
+        function handleTextClick(event) {
+            let selection = window.getSelection();
+            let selectedText = selection.toString().trim();
+
+            if (selectedText && dictionary[selectedText]) {
+                let range = selection.getRangeAt(0);
+                let tooltip = document.createElement("span");
+                tooltip.className = "tooltip";
+                tooltip.innerText = dictionary[selectedText];
+                
+                let oldTooltip = document.querySelector(".tooltip");
+                if (oldTooltip) oldTooltip.remove();
+                
+                range.insertNode(tooltip);
+            }
+        }
+
+        // Thêm từ mới vào từ điển và lưu vào localStorage
+        function addWord() {
+            let newWord = document.getElementById("newWord").value.trim();
+            let newMeaning = document.getElementById("newMeaning").value.trim();
+
+            if (newWord && newMeaning) {
+                dictionary[newWord] = newMeaning;
+                localStorage.setItem("russianVietnameseDict", JSON.stringify(dictionary));
+                alert(`Đã thêm: ${newWord} - ${newMeaning}`);
+                document.getElementById("newWord").value = "";
+                document.getElementById("newMeaning").value = "";
+            } else {
+                alert("Vui lòng nhập cả từ và nghĩa.");
+            }
+        }
+    </script>
+
+</body>
+</html>
+
